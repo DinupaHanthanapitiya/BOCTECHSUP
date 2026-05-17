@@ -230,7 +230,8 @@
   <script>
     const storageKeys = {
       inventory: 'boctech_inventory',
-      logs: 'boctech_user_logs'
+      logs: 'boctech_user_logs',
+      itemCounter: 'boctech_item_counter'
     };
 
     let currentUser = null;
@@ -307,7 +308,9 @@
       if (window.crypto && typeof window.crypto.randomUUID === 'function') {
         return `ITM-${window.crypto.randomUUID()}`;
       }
-      return `ITM-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+      const currentCounter = Number(localStorage.getItem(storageKeys.itemCounter) || '0') + 1;
+      localStorage.setItem(storageKeys.itemCounter, String(currentCounter));
+      return `ITM-${currentCounter}`;
     }
 
     function clearForm() {
