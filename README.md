@@ -14,10 +14,10 @@ Hardware maintenance and inventory management site for technical assets such as 
 
 ## Run
 
-Open `/home/runner/work/BOCTECHSUP/BOCTECHSUP/index.html` in a browser.
+Open `index.html` in a browser.
 
 Sample users:
 
-- `admin` / `admin123`
-- `tech` / `tech123`
-- `viewer` / `view123`
+- `admin` (role: admin)
+- `tech` (role: technician)
+- `viewer` (role: viewer)

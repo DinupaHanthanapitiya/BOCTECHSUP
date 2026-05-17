@@ -126,13 +126,17 @@
         <input id="username" type="text" autocomplete="username" />
       </div>
       <div>
-        <label for="password">Password</label>
-        <input id="password" type="password" autocomplete="current-password" />
+        <label for="loginRole">Role</label>
+        <select id="loginRole">
+          <option value="admin">admin</option>
+          <option value="technician">technician</option>
+          <option value="viewer">viewer</option>
+        </select>
       </div>
     </div>
     <button id="loginBtn" type="button">Login</button>
     <p class="status" id="loginStatus"></p>
-    <p><strong>Sample users:</strong> admin/admin123, tech/tech123, viewer/view123</p>
+    <p><strong>Example usernames:</strong> admin, tech, viewer</p>
   </section>
 
   <section id="appSection" class="hidden">
@@ -224,12 +228,6 @@
   </section>
 
   <script>
-    const users = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'tech', password: 'tech123', role: 'technician' },
-      { username: 'viewer', password: 'view123', role: 'viewer' }
-    ];
-
     const storageKeys = {
       inventory: 'boctech_inventory',
       logs: 'boctech_user_logs'
@@ -245,7 +243,7 @@
     const inventoryStatus = document.getElementById('inventoryStatus');
 
     const usernameInput = document.getElementById('username');
-    const passwordInput = document.getElementById('password');
+    const loginRoleInput = document.getElementById('loginRole');
 
     const inventoryForm = document.getElementById('inventoryForm');
     const cancelEditBtn = document.getElementById('cancelEditBtn');
@@ -408,15 +406,14 @@
 
     function login() {
       const username = usernameInput.value.trim();
-      const password = passwordInput.value;
-      const user = users.find((entry) => entry.username === username && entry.password === password);
+      const role = loginRoleInput.value;
 
-      if (!user) {
-        setStatus(loginStatus, 'Invalid username or password.', true);
+      if (!username) {
+        setStatus(loginStatus, 'Please enter a username.', true);
         return;
       }
 
-      currentUser = { username: user.username, role: user.role };
+      currentUser = { username, role };
       loginSection.classList.add('hidden');
       appSection.classList.remove('hidden');
       sessionInfo.textContent = `Logged in as ${currentUser.username} (${currentUser.role})`;
@@ -446,7 +443,7 @@
       appSection.classList.add('hidden');
       loginSection.classList.remove('hidden');
       usernameInput.value = '';
-      passwordInput.value = '';
+      loginRoleInput.value = 'admin';
       setStatus(inventoryStatus, '');
       setStatus(loginStatus, 'Logged out successfully.');
     }
