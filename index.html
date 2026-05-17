@@ -359,7 +359,7 @@
 
       logs.forEach((log) => {
         const row = document.createElement('tr');
-        const values = [new Date(log.time).toLocaleString(), log.username, log.role, log.action, log.details];
+        const values = [new Date(log.time).toLocaleString('en-GB', { dateStyle: 'short', timeStyle: 'medium' }), log.username, log.role, log.action, log.details];
 
         values.forEach((value) => {
           const td = document.createElement('td');
