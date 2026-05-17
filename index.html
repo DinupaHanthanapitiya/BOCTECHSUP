@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BOC Tech Support - Inventory Manager</title>
+  <style>
+    :root {
+      font-family: Arial, sans-serif;
+      color: #0f172a;
+      background: #f8fafc;
+    }
+
+    body {
+      margin: 0;
+      padding: 1.5rem;
+      background: #f8fafc;
+    }
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: 600;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.45rem;
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      padding: 0.5rem 0.8rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #1d4ed8;
+      color: white;
+      font-weight: 600;
+    }
+
+    button.secondary {
+      background: #334155;
+    }
+
+    button.danger {
+      background: #b91c1c;
+    }
+
+    button:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .status {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      color: #0f766e;
+      min-height: 1.2em;
+    }
+
+    .error {
+      color: #b91c1c;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 0.5rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #eff6ff;
+    }
+
+    .actions {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>BOC Tech Support Hardware Inventory</h1>
+
+  <section id="loginSection" class="card">
+    <h2>Login</h2>
+    <div class="row">
+      <div>
+        <label for="username">Username</label>
+        <input id="username" type="text" autocomplete="username" />
+      </div>
+      <div>
+        <label for="password">Password</label>
+        <input id="password" type="password" autocomplete="current-password" />
+      </div>
+    </div>
+    <button id="loginBtn" type="button">Login</button>
+    <p class="status" id="loginStatus"></p>
+    <p><strong>Sample users:</strong> admin/admin123, tech/tech123, viewer/view123</p>
+  </section>
+
+  <section id="appSection" class="hidden">
+    <div class="card">
+      <h2>Session</h2>
+      <p id="sessionInfo"></p>
+      <button id="logoutBtn" type="button" class="secondary">Logout</button>
+    </div>
+
+    <div class="card">
+      <h2>Inventory Item</h2>
+      <form id="inventoryForm">
+        <div class="row">
+          <div>
+            <label for="itemName">Item Name</label>
+            <input id="itemName" type="text" required />
+          </div>
+          <div>
+            <label for="itemType">Category</label>
+            <select id="itemType" required>
+              <option value="">Select</option>
+              <option value="PC">PC</option>
+              <option value="Laptop">Laptop</option>
+              <option value="Mouse">Mouse</option>
+              <option value="Printer">Printer</option>
+              <option value="Keyboard">Keyboard</option>
+              <option value="Monitor">Monitor</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="itemQty">Quantity</label>
+            <input id="itemQty" type="number" min="1" value="1" required />
+          </div>
+          <div>
+            <label for="itemLocation">Location</label>
+            <input id="itemLocation" type="text" required />
+          </div>
+          <div>
+            <label for="itemStatus">Status</label>
+            <select id="itemStatus" required>
+              <option value="Active">Active</option>
+              <option value="In Repair">In Repair</option>
+              <option value="Retired">Retired</option>
+            </select>
+          </div>
+        </div>
+        <div class="actions">
+          <button id="saveItemBtn" type="submit">Save Item</button>
+          <button id="cancelEditBtn" type="button" class="secondary">Cancel Edit</button>
+        </div>
+      </form>
+      <p class="status" id="inventoryStatus"></p>
+    </div>
+
+    <div class="card">
+      <h2>Inventory List</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Qty</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventoryBody"></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>User Action Log</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>User</th>
+            <th>Role</th>
+            <th>Action</th>
+            <th>Details</th>
+          </tr>
+        </thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const users = [
+      { username: 'admin', password: 'admin123', role: 'admin' },
+      { username: 'tech', password: 'tech123', role: 'technician' },
+      { username: 'viewer', password: 'view123', role: 'viewer' }
+    ];
+
+    const storageKeys = {
+      inventory: 'boctech_inventory',
+      logs: 'boctech_user_logs'
+    };
+
+    let currentUser = null;
+    let editItemId = null;
+
+    const loginSection = document.getElementById('loginSection');
+    const appSection = document.getElementById('appSection');
+    const sessionInfo = document.getElementById('sessionInfo');
+    const loginStatus = document.getElementById('loginStatus');
+    const inventoryStatus = document.getElementById('inventoryStatus');
+
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+
+    const inventoryForm = document.getElementById('inventoryForm');
+    const cancelEditBtn = document.getElementById('cancelEditBtn');
+    const saveItemBtn = document.getElementById('saveItemBtn');
+
+    const itemName = document.getElementById('itemName');
+    const itemType = document.getElementById('itemType');
+    const itemQty = document.getElementById('itemQty');
+    const itemLocation = document.getElementById('itemLocation');
+    const itemStatus = document.getElementById('itemStatus');
+
+    const inventoryBody = document.getElementById('inventoryBody');
+    const logBody = document.getElementById('logBody');
+
+    function getData(key) {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : [];
+    }
+
+    function setData(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function permissionsFor(role) {
+      return {
+        create: role === 'admin' || role === 'technician',
+        edit: role === 'admin' || role === 'technician',
+        delete: role === 'admin'
+      };
+    }
+
+    function addLog(action, details) {
+      if (!currentUser) return;
+      const logs = getData(storageKeys.logs);
+      logs.unshift({
+        time: new Date().toISOString(),
+        username: currentUser.username,
+        role: currentUser.role,
+        action,
+        details
+      });
+      setData(storageKeys.logs, logs.slice(0, 200));
+      renderLogs();
+    }
+
+    function setStatus(target, message, isError = false) {
+      target.textContent = message;
+      target.classList.toggle('error', isError);
+    }
+
+    function requirePermission(permissionName) {
+      const permissions = permissionsFor(currentUser.role);
+      if (!permissions[permissionName]) {
+        setStatus(inventoryStatus, `Access denied: ${currentUser.role} cannot ${permissionName} items.`, true);
+        return false;
+      }
+      return true;
+    }
+
+    function clearForm() {
+      inventoryForm.reset();
+      itemQty.value = '1';
+      itemStatus.value = 'Active';
+      editItemId = null;
+      saveItemBtn.textContent = 'Save Item';
+    }
+
+    function renderInventory() {
+      const inventory = getData(storageKeys.inventory);
+      inventoryBody.textContent = '';
+
+      const permissions = permissionsFor(currentUser.role);
+
+      inventory.forEach((item) => {
+        const row = document.createElement('tr');
+        const columns = [item.id, item.name, item.type, String(item.qty), item.location, item.status];
+
+        columns.forEach((value) => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          row.appendChild(td);
+        });
+
+        const actions = document.createElement('td');
+        const actionWrap = document.createElement('div');
+        actionWrap.className = 'actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.type = 'button';
+        editBtn.className = 'secondary';
+        editBtn.disabled = !permissions.edit;
+        editBtn.addEventListener('click', () => startEdit(item.id));
+
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'danger';
+        deleteBtn.disabled = !permissions.delete;
+        deleteBtn.addEventListener('click', () => deleteItem(item.id));
+
+        actionWrap.appendChild(editBtn);
+        actionWrap.appendChild(deleteBtn);
+        actions.appendChild(actionWrap);
+        row.appendChild(actions);
+        inventoryBody.appendChild(row);
+      });
+    }
+
+    function renderLogs() {
+      const logs = getData(storageKeys.logs);
+      logBody.textContent = '';
+
+      logs.forEach((log) => {
+        const row = document.createElement('tr');
+        const values = [new Date(log.time).toLocaleString(), log.username, log.role, log.action, log.details];
+
+        values.forEach((value) => {
+          const td = document.createElement('td');
+          td.textContent = value;
+          row.appendChild(td);
+        });
+
+        logBody.appendChild(row);
+      });
+    }
+
+    function startEdit(itemId) {
+      if (!requirePermission('edit')) {
+        return;
+      }
+      const inventory = getData(storageKeys.inventory);
+      const item = inventory.find((entry) => entry.id === itemId);
+      if (!item) return;
+
+      editItemId = item.id;
+      itemName.value = item.name;
+      itemType.value = item.type;
+      itemQty.value = item.qty;
+      itemLocation.value = item.location;
+      itemStatus.value = item.status;
+      saveItemBtn.textContent = 'Update Item';
+      setStatus(inventoryStatus, `Editing item ${item.id}`);
+    }
+
+    function deleteItem(itemId) {
+      if (!requirePermission('delete')) {
+        return;
+      }
+      const inventory = getData(storageKeys.inventory);
+      const item = inventory.find((entry) => entry.id === itemId);
+      const updated = inventory.filter((entry) => entry.id !== itemId);
+      setData(storageKeys.inventory, updated);
+      renderInventory();
+      if (item) {
+        addLog('DELETE_ITEM', `${item.id} - ${item.name}`);
+      }
+      setStatus(inventoryStatus, `Deleted item ${itemId}`);
+    }
+
+    function login() {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value;
+      const user = users.find((entry) => entry.username === username && entry.password === password);
+
+      if (!user) {
+        setStatus(loginStatus, 'Invalid username or password.', true);
+        return;
+      }
+
+      currentUser = { username: user.username, role: user.role };
+      loginSection.classList.add('hidden');
+      appSection.classList.remove('hidden');
+      sessionInfo.textContent = `Logged in as ${currentUser.username} (${currentUser.role})`;
+
+      const permissions = permissionsFor(currentUser.role);
+      const canModify = permissions.create || permissions.edit;
+      Array.from(inventoryForm.elements).forEach((element) => {
+        if (element.tagName === 'INPUT' || element.tagName === 'SELECT' || element.tagName === 'BUTTON') {
+          if (element.id !== 'cancelEditBtn') {
+            element.disabled = !canModify;
+          }
+        }
+      });
+      cancelEditBtn.disabled = !canModify;
+
+      setStatus(loginStatus, '');
+      setStatus(inventoryStatus, permissions.create ? 'You can add inventory items.' : 'Read-only mode.');
+      addLog('LOGIN', 'User logged into inventory system');
+      clearForm();
+      renderInventory();
+      renderLogs();
+    }
+
+    function logout() {
+      addLog('LOGOUT', 'User logged out');
+      currentUser = null;
+      appSection.classList.add('hidden');
+      loginSection.classList.remove('hidden');
+      usernameInput.value = '';
+      passwordInput.value = '';
+      setStatus(inventoryStatus, '');
+      setStatus(loginStatus, 'Logged out successfully.');
+    }
+
+    inventoryForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      if (!currentUser) {
+        setStatus(inventoryStatus, 'Please log in.', true);
+        return;
+      }
+
+      const isEdit = editItemId !== null;
+      if (!requirePermission(isEdit ? 'edit' : 'create')) {
+        return;
+      }
+
+      const inventory = getData(storageKeys.inventory);
+      const payload = {
+        id: isEdit ? editItemId : `ITM-${Date.now()}`,
+        name: itemName.value.trim(),
+        type: itemType.value,
+        qty: Number(itemQty.value),
+        location: itemLocation.value.trim(),
+        status: itemStatus.value
+      };
+
+      if (!payload.name || !payload.type || !payload.location || payload.qty < 1) {
+        setStatus(inventoryStatus, 'Please enter valid inventory details.', true);
+        return;
+      }
+
+      if (isEdit) {
+        const updated = inventory.map((entry) => (entry.id === editItemId ? payload : entry));
+        setData(storageKeys.inventory, updated);
+        addLog('UPDATE_ITEM', `${payload.id} - ${payload.name}`);
+        setStatus(inventoryStatus, `Updated item ${payload.id}`);
+      } else {
+        inventory.push(payload);
+        setData(storageKeys.inventory, inventory);
+        addLog('CREATE_ITEM', `${payload.id} - ${payload.name}`);
+        setStatus(inventoryStatus, `Added item ${payload.id}`);
+      }
+
+      clearForm();
+      renderInventory();
+    });
+
+    document.getElementById('loginBtn').addEventListener('click', login);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    cancelEditBtn.addEventListener('click', () => {
+      clearForm();
+      setStatus(inventoryStatus, 'Edit canceled.');
+    });
+
+    renderLogs();
+  </script>
+</body>
+</html>
