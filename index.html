@@ -305,9 +305,6 @@
     }
 
     function createItemId() {
-      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-        return `ITM-${window.crypto.randomUUID()}`;
-      }
       const currentCounter = Number(localStorage.getItem(storageKeys.itemCounter) || '0') + 1;
       localStorage.setItem(storageKeys.itemCounter, String(currentCounter));
       return `ITM-${currentCounter}`;
