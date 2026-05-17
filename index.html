@@ -303,6 +303,13 @@
       return true;
     }
 
+    function createItemId() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return `ITM-${window.crypto.randomUUID()}`;
+      }
+      return `ITM-${Date.now()}-${Math.floor(Math.random() * 1000000)}`;
+    }
+
     function clearForm() {
       inventoryForm.reset();
       itemQty.value = '1';
@@ -463,7 +470,7 @@
 
       const inventory = getData(storageKeys.inventory);
       const payload = {
-        id: isEdit ? editItemId : `ITM-${Date.now()}`,
+        id: isEdit ? editItemId : createItemId(),
         name: itemName.value.trim(),
         type: itemType.value,
         qty: Number(itemQty.value),
